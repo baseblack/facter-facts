@@ -117,6 +117,7 @@ if Facter.value(:kernel) == 'Linux'
           ssds << k
         end #if match
       end #disks.each
+      print "#{ssds}\n"
       return ssds.to_s
     end #setcode do
   end #Facter.add
