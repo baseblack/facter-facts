@@ -108,6 +108,19 @@ if Facter.value(:kernel) == 'Linux'
     setcode { disks.sort.uniq.join(',') }
   end
 
+  Facter.add("ssd_devices")do
+    setcode do
+      ssds = []
+      disks.each do |k,v|
+        type = Facter::Util::Resolution.exec("hdparm -I /dev/#{k}|grep "Nominal Media Rotation Rate" | perl -n -e'/Nominal Media Rotation Rate:\s(.+)$/ && print $1'").chomp!
+        if type.match(/Solid State/)
+          ssds << k
+        end #if match
+      end #disks.each
+      return ssds
+    end #setcode do
+  end #Facter.add
+
   blocks.each do |k,v|
     Facter.add("blocks_#{k}") do
       confine :kernel => :linux
