@@ -126,7 +126,7 @@ if Facter.value(:kernel) == 'Linux'
   ssds.each do |k,v|
     Facter.add("ssd_#{k}") do
       confine :kernel => :linux
-      setcode { true }
+      setcode { "Yes" }
     end
   end
 	
