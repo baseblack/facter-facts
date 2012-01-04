@@ -114,12 +114,12 @@ if Facter.value(:kernel) == 'Linux'
       disks.each do |k,v|
         type = `hdparm -I /dev/#{k}|grep "Nominal Media Rotation Rate" | perl -n -e'/Nominal Media Rotation Rate:\s(.+)$/ && print $1'`
         if type.match(/Solid State/)
-          if not ssds.include?(k)
-            ssds << k
-          end #if include
+          #if not ssds.include?(k)
+          ssds << k
+          #end #if include
         end #if match
       end #disks.each
-      ssds.to_s
+      ssds.sort.uniq.join(',')
     end #setcode do
   end #Facter.add
 
