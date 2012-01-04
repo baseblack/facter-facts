@@ -18,6 +18,7 @@ if Facter.value(:kernel) == 'Linux'
   # We store a list of disks (or block devices if you wish) here ...
   disks = []
   ssds = []
+  ssdx = []
 
   # We store number of blocks per disk and/or partition here ...
   blocks = {}
@@ -103,6 +104,14 @@ if Facter.value(:kernel) == 'Linux'
       partitions[disk] << partition unless partition == disk
     end
   end
+  
+  disks.each do |k,v|
+    type = `hdparm -I /dev/#{k}|grep "Nominal Media Rotation Rate" | perl -n -e'/Nominal Media Rotation Rate:\s(.+)$/ && print $1'`
+    if type.match(/Solid State/)
+      ssdx << k
+    end #if
+  end #do
+
 
   Facter.add('disks') do
     confine :kernel => :linux
@@ -111,19 +120,19 @@ if Facter.value(:kernel) == 'Linux'
 
   Facter.add("ssd_devices")do
     setcode do
-      disks.each do |k,v|
-        type = `hdparm -I /dev/#{k}|grep "Nominal Media Rotation Rate" | perl -n -e'/Nominal Media Rotation Rate:\s(.+)$/ && print $1'`
-        if type.match(/Solid State/)
-          #if not ssds.include?(k)
-          ssds << k
-          #end #if include
-        end #if match
-      end #disks.each
+      #disks.each do |k,v|
+      #  type = `hdparm -I /dev/#{k}|grep "Nominal Media Rotation Rate" | perl -n -e'/Nominal Media Rotation Rate:\s(.+)$/ && print $1'`
+      #  if type.match(/Solid State/)
+      #    #if not ssds.include?(k)
+      #    ssds << k
+      #    #end #if include
+      #  end #if match
+      #end #disks.each
       ssds.sort.uniq.join(',')
     end #setcode do
   end #Facter.add
 
-  ssds.each do |k,v|
+  ssdx.each do |k,v|
     Facter.add("ssd_#{k}") do
       print "#{k}\n"
       confine :kernel => :linux
