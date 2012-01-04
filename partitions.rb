@@ -112,7 +112,7 @@ if Facter.value(:kernel) == 'Linux'
     setcode do
       ssds = []
       disks.each do |k,v|
-        type = `hdparm -I /dev/#{k}|grep \"Nominal Media Rotation Rate\" | perl -n -e'/Nominal Media Rotation Rate:\s(.+)$/ && print $1'`.chomp!
+        type = `hdparm -I /dev/#{k}|grep "Nominal Media Rotation Rate" | perl -n -e'/Nominal Media Rotation Rate:\s(.+)$/ && print $1'`.chomp!
         if type.match(/Solid State/)
           ssds << k
         end #if match
