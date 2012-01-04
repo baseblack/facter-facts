@@ -106,7 +106,7 @@ if Facter.value(:kernel) == 'Linux'
   end
   
   disks.each do |k,v|
-    type = `/sbin/hdparm -I /dev/#{k}|/bin/grep "Nominal Media Rotation Rate"`.chomp!      # | /usr/bin/perl -n -e'/Nominal Media Rotation Rate:\s(.+)$/ && print $1'`
+    type = `/sbin/hdparm -I /dev/#{k}|/bin/grep "Nominal Media Rotation Rate"`.chomp! 
     disksize = `/sbin/sfdisk -g /dev/#{k}`.chomp!
     if m = disksize.match(/(\d+) cylinders/)
       cyl_max = m[1]
@@ -127,14 +127,6 @@ if Facter.value(:kernel) == 'Linux'
 
   Facter.add("ssd_devices")do
     setcode do
-      #disks.each do |k,v|
-      #  type = `hdparm -I /dev/#{k}|grep "Nominal Media Rotation Rate" | perl -n -e'/Nominal Media Rotation Rate:\s(.+)$/ && print $1'`
-      #  if type.match(/Solid State/)
-      #    #if not ssds.include?(k)
-      #    ssds << k
-      #    #end #if include
-      #  end #if match
-      #end #disks.each
       ssdx.sort.uniq.join(',')
     end #setcode do
   end #Facter.add
