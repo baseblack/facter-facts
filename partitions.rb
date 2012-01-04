@@ -141,10 +141,10 @@ if Facter.value(:kernel) == 'Linux'
     end
   end
 
-  ssds.each do |k,v|
+  ssdx.each do |k,v|
     Facter.add("ssd_cylmax_#{k}") do
       confine :kernel => :linux
-      setcode { v }
+      setcode { ssds[k] }
     end
   end
 
