@@ -110,6 +110,7 @@ if Facter.value(:kernel) == 'Linux'
     if type.match(/Solid State/)
       ssdx << k
       cyl_max = `sfdisk -g /dev/#{k}|perl -n -e'/(\d+) cylinders?/ && print $1'`
+      print "#{cyl_max}\n"
       ssds[k] = cyl_max.chomp
     end #if
   end #do
