@@ -106,15 +106,17 @@ if Facter.value(:kernel) == 'Linux'
   end
   
   disks.each do |k,v|
-    type = `/sbin/hdparm -I /dev/#{k}|/bin/grep "Nominal Media Rotation Rate" | /usr/bin/perl -n -e'/Nominal Media Rotation Rate:\s(.+)$/ && print $1'`
+    type = `/sbin/hdparm -I /dev/#{k}|/bin/grep "Nominal Media Rotation Rate"`.chomp!      # | /usr/bin/perl -n -e'/Nominal Media Rotation Rate:\s(.+)$/ && print $1'`
     disksize = `/sbin/sfdisk -g /dev/#{k}`.chomp!
     if m = disksize.match(/(\d+) cylinders/)
       cyl_max = m[1]
       ssds[k] = cyl_max
     end #if
-    if type.match(/Solid State/)
-      ssdx << k
-    end #if
+    if n = type.match(/Nominal Media Rotation Rate:\s(.+)$/)
+      if n[1].match(/Solid State/)
+        ssdx << k
+      end #if solid state
+    end #if match capture
   end #do
 
 
