@@ -17,7 +17,7 @@ if Facter.value(:kernel) == 'Linux'
 
   # We store a list of disks (or block devices if you wish) here ...
   disks = []
-  ssds = []
+  ssds = {}
   ssdx = []
 
   # We store number of blocks per disk and/or partition here ...
@@ -109,6 +109,8 @@ if Facter.value(:kernel) == 'Linux'
     type = `hdparm -I /dev/#{k}|grep "Nominal Media Rotation Rate" | perl -n -e'/Nominal Media Rotation Rate:\s(.+)$/ && print $1'`
     if type.match(/Solid State/)
       ssdx << k
+      cyl_max = `sfdisk -g /dev/#{k}|perl -n -e'/(\d+) cylinders?/ && print $1`
+      ssds[k] = cyl_max
     end #if
   end #do
 
@@ -128,7 +130,7 @@ if Facter.value(:kernel) == 'Linux'
       #    #end #if include
       #  end #if match
       #end #disks.each
-      ssds.sort.uniq.join(',')
+      ssdx.sort.uniq.join(',')
     end #setcode do
   end #Facter.add
 
@@ -138,7 +140,16 @@ if Facter.value(:kernel) == 'Linux'
       setcode { true }
     end
   end
-	
+
+  ssds.each do |k,v|
+    Facter.add("ssd_cylmax_#{k}") do
+      confine :kernel => :linux
+      setcode { v }
+    end
+  end
+
+  
+
 
   blocks.each do |k,v|
     Facter.add("blocks_#{k}") do
